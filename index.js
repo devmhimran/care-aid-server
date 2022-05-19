@@ -12,10 +12,11 @@ require('dotenv').config();
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.eq9rh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
-async function run(){
+async function run() {
   try {
     await client.connect();
     const serviceCollection = client.db("care-aid").collection("services");
+    const bookingCollection = client.db("care-aid").collection("bookings");
 
     app.get('/services', async (req, res) => {
       const query = {};
@@ -23,7 +24,15 @@ async function run(){
       const services = await cursor.toArray();
       res.send(services);
     })
-  }finally{}
+
+    app.post('/bookings', async (req, res) =>{
+      const booking = req.body;
+      const query = {}
+      const result = await bookingCollection.insertOne(booking);
+
+    })
+
+  } finally { }
 
 }
 run().catch(console.dir);
