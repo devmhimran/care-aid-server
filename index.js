@@ -41,7 +41,7 @@ async function run() {
     })
     
     app.get('/available', async(req, res) =>{
-      const date = req.query.date || 'May 20, 2022';
+      const date = req.query.date ;
       const query = {date: date};
       const bookings = await bookingCollection.find(query).toArray();
       const services = await serviceCollection.find().toArray();
