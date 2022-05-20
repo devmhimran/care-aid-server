@@ -3,6 +3,7 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const res = require('express/lib/response');
 
 app.use(cors());
 app.use(express.json());
@@ -36,8 +37,24 @@ async function run() {
         const result = await bookingCollection.insertOne(booking);
         return res.send({success: true, result})
       }
-      
+
     })
+    
+    app.get('/available', async(req, res) =>{
+      const date = req.query.date || 'May 20, 2022';
+      const query = {date: date};
+      const bookings = await bookingCollection.find(query).toArray();
+      const services = await serviceCollection.find().toArray();
+
+      services.forEach(service =>{
+        const serviceBookings = bookings.filter(s => s.treatment === service.name);
+        const booked = serviceBookings.map(s => s.slot);
+        const available = service.slots.filter(s => !booked.includes(s))
+        service.available = available;                                                                                                                                                                                                                                                                                            
+      })
+      res.send(services)
+    })
+    
 
   } finally { }
 
