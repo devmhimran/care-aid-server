@@ -26,6 +26,13 @@ async function run() {
       res.send(services);
     })
 
+    app.get('/bookings', async(req, res)=>{
+      const bookings = req.query.patientEmail;
+      const query = {patientEmail: bookings}
+      const result = await bookingCollection.find(query).toArray();
+      res.send(result);
+    })
+
     app.post('/bookings', async (req, res) =>{
       const booking = req.body;
       const query = {treatmentId: booking.treatmentId, date: booking.date, patientEmail: booking.patientEmail};
@@ -37,7 +44,6 @@ async function run() {
         const result = await bookingCollection.insertOne(booking);
         return res.send({success: true, result})
       }
-
     })
     
     app.get('/available', async(req, res) =>{
